@@ -1,0 +1,47 @@
+core.workflow(
+    name = "default",
+
+    origin = git.origin(
+      url = "https://chromium.googlesource.com/infra/infra",
+      ref = "main",
+    ),
+
+    destination = git.destination(
+        url = "file:///home/philwo/src/kajiya",
+        fetch = "main",
+        push = "main",
+    ),
+
+    origin_files = glob([
+        "LICENSE",
+        "go/src/infra/build/kajiya/**"
+    ]),
+
+    destination_files = glob(["**"], exclude = [
+        "copy.bara.sky",
+        "go.mod",
+        "go.sum",
+        "CONTRIBUTING.md",
+    ]),
+
+    mode = "ITERATIVE",
+    reversible_check = True,
+    authoring = authoring.pass_thru("Philipp Wollermann <philwo@google.com>"),
+
+    transformations = [
+        core.replace(
+                before = "Copyright 2015",
+                after = "Copyright 2023",
+                paths = glob(["LICENSE"]),
+        ),
+        core.replace(
+                before = "infra/build/kajiya",
+                after = "github.com/philwo/kajiya",
+                paths = glob(["**/*.go"])),
+        core.move(
+                before = "go/src/infra/build/kajiya",
+                after = "",
+                paths = glob(["**"], exclude = ["LICENSE"])),
+    ],
+)
+
